@@ -33,19 +33,16 @@ run_dvblast()
   /home/dvb/dvblast/dvblast  $adapter -r "$sock" -c "$cfg" $freq $symbol $voltage $unicable $unicable_freq $unicable_id $satnum $mod $FLAGS >"$log" 2>&1 &
   echo $! >"$pid"
 
-  # sleep a bit so diseqc does not get mixed up
-  sleep 10
-
   echo Started: $1
 }
 
-configs="${*:-../cfg/dvb-1*.cfg}"
+configs="${*:-../cfg/$(hostname)*.cfg}"
 for cfg in $configs
 do
-  echo $cfg
   cfg=$(basename $cfg | cut -d '.' -f 1)
   run_dvblast $cfg &
-  sleep 30
+  #sleep a bit so diseqc does not get mixed up
+  sleep 10
 done
 wait
 
