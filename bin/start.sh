@@ -10,7 +10,7 @@ FLAGS="-C -e -W -Y --sap"
 
 run_dvblast()
 {
-  cfg="../cfg/$1.cfg"
+  cfg="/home/dvb/dvbcfg/cfg/$1.cfg"
   pid="/tmp/dvb/$1.pid"
   sock="/tmp/dvb/$1.sock"
   log="/var/log/dvb/$1.log"
@@ -36,7 +36,7 @@ run_dvblast()
   echo Started: $1
 }
 
-configs="${*:-../cfg/$(hostname)*.cfg}"
+configs="${*:-/home/dvb/dvbcfg/cfg/$(hostname)*.cfg}"
 for cfg in $configs
 do
   cfg=$(basename $cfg | cut -d '.' -f 1)
