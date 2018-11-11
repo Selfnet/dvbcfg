@@ -162,6 +162,10 @@ def append_tid(frq_td,fl_tr,tid):
             index = frq_td.index(transponder)
             bouquet_frq_td.append(frq_td[int(index)])
             bouquet_fl_tr.append(fl_tr[int(index)])
+            # check if it was an empty transponder and delete it if there is no corresponding table
+            if len(fl_tr[int(index)]) == 1:
+                del bouquet_frq_td[-1]
+                del bouquet_fl_tr[-1]
     return bouquet_frq_td, bouquet_fl_tr
 
 def main(path,satpos,tid):
@@ -176,7 +180,7 @@ def main(path,satpos,tid):
     url = 'https://en.kingofsat.net/pos-'+satpos+'.php'
     # get page and soup it
     #content = Soup(download(url),'html.parser')
-    content = Soup(read('tv-19.2E.php'),'html.parser')
+    content = Soup(read('pos-19.2E.php'),'html.parser')
 
     # init frq settings array
     frq_td = []
