@@ -27,28 +27,28 @@ def read(filename):
     file = open(filename,'r').read()
     return file
 
-#def getmapping():
-#    # read mapping file
-#    mapping = Soup(read("mapping.xml"),"xml")
-#    grouping = []
-#    # loop over all satpos
-#    for satpos in mapping.find_all("satpos"):
-#        satposition = []
-#        # and over all groupings
-#        for satgroups in satpos.find_all("group"):
-#            satgroup = []
-#            # and over all adapters
-#            for adapters in satgroups.find_all("adapters"):
-#                # add hostname + adapter to this group
-#                satgroup.append([adapters.hostname.get_text(),adapters.adapternumber.get_text()])
-#            # add group number and hostname/adapters to this position
-#            satposition.append([satgroups.number.get_text(),satgroup])
-#        # add it to our grouping with position name and all groups/adapters
-#        grouping.append([satpos.position.get_text(),satposition])
-#    return grouping
+def getmapping():
+    # read mapping file
+    mapping = Soup(read("mapping.xml"),"xml")
+    grouping = []
+    # loop over all satpos
+    for satpos in mapping.find_all("satpos"):
+        satposition = []
+        # and over all groupings
+        for satgroups in satpos.find_all("group"):
+            satgroup = []
+            # and over all adapters
+            for adapters in satgroups.find_all("adapters"):
+                # add hostname + adapter to this group
+                satgroup.append([adapters.hostname.get_text(),adapters.adapternumber.get_text()])
+            # add group number and hostname/adapters to this position
+            satposition.append([satgroups.number.get_text(),satgroup])
+        # add it to our grouping with position name and all groups/adapters
+        grouping.append([satpos.position.get_text(),satposition])
+    return grouping
 
 
-def create_content(path,satpos,frq_td,fl_tr):
+def create_content(path,satpos,mapping,frq_td,fl_tr):
     ccount = 0
     acount = 0
     for transponder in frq_td:
@@ -74,21 +74,37 @@ def create_content(path,satpos,frq_td,fl_tr):
         else:
             mod = 'qam_auto'
 
-#        # get hostname and adapter for this satpos
-#        for position in mapping:
-#            if satpos == position[0]:
-#                sat = mapping[mapping.index(position)]
-#                print(sat)
-#                # sat[groups of matching orbital positions][0][][
-#                hostname = sat[1][0][1][0][0]
-#                adapter = sat[1][0][1][0][1]
-#                print(hostname)
-#                print(adapter)
+        # get hostname and adapter for this satpos
+        for position in mapping:
+            satcount = 0
+            if satpos == position[0]:
+                # sat[group][adapterposition][hostname|adapter]
+                # go to next group if group is empty
+                if (len(position[1][satcount][1]) == 0) and len(position[1]) != satcount:
+                    satcount += 1
+                sat = position[1][satcount]
+                #p
+                if len(sat[1]) != 0:
+                    hostname = sat[1][0][0]
+                    adapter = sat[1][0][1]
+                    del sat[1][0]
+                else:
+                    raise Exception('Too much TID for this orbital position specified!')
+                print(hostname)
+                print(adapter)
+
+        # throw error if oprital position not found in mapping
+        try:
+            hostname
+        except NameError:
+            raise Exception('Orbital Position not found in mapping!')
+
+
         # open cfg file write
-        cfg_file = open(path + "/" + socket.gethostname() + "-a"+ str(ccount) + ".cfg", "w")
+        cfg_file = open(path + "/" + hostname + "-a"+ adapter + ".cfg", "w")
 
         # print first two lines
-        cfg_file.write("#Adapter: " + str(ccount) + " Freq: " + freq + " SRate: " + srate + " Volt: " + volt + " Mod: " + mod + "\n")
+        cfg_file.write("#Adapter: " + adapter + " Freq: " + freq + " SRate: " + srate + " Volt: " + volt + " Mod: " + mod + "\n")
         cfg_file.write("#Unicable: 2 Freq: " + unicable[acount] + " ID: " + str(acount) + " Satnum: 0\n")
 
         # loop over all stations of this one frequency
@@ -154,7 +170,7 @@ def main(path,satpos,tid):
         if item.endswith(".cfg"):
             os.remove( os.path.join( path, item ) )
     # read mapping file for servers
-#    mapping = getmapping()
+    mapping = getmapping()
 
     # test url
     url = 'https://en.kingofsat.net/pos-'+satpos+'.php'
@@ -183,7 +199,7 @@ def main(path,satpos,tid):
     # get data to write files for (our tid tables)
     bouquet = append_tid(frq_td,fl_tr,tid)
     # print the bouquet to files
-    create_content(path,satpos,bouquet[0],bouquet[1])
+    create_content(path,satpos,mapping,bouquet[0],bouquet[1])
 
 if __name__ == "__main__":
     if len(sys.argv) <= 2:
