@@ -179,8 +179,8 @@ def main(path,satpos,tid):
     # test url
     url = 'https://en.kingofsat.net/pos-'+satpos+'.php'
     # get page and soup it
-    #content = Soup(download(url),'html.parser')
-    content = Soup(read('pos-19.2E.php'),'html.parser')
+    content = Soup(download(url),'html.parser')
+    #content = Soup(read('pos-19.2E.php'),'html.parser')
 
     # init frq settings array
     frq_td = []

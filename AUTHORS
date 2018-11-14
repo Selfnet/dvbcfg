@@ -1,0 +1,18 @@
+# Contributors to dvbcfg
+# 
+# The format of this file was inspired by the Linux kernel CREDITS file.
+# Authors are listed alphabetically.
+# 
+# The fields are: name (N), email (E), web-address (W), CVS account login (C),
+# PGP key ID and fingerprint (P), description (D), and snail-mail address (S).
+
+N: Michael Müller
+E: michael.mueller AT selfnet DOT de
+P: 0DE6 4766 E0A4 1469 E294 7FFB E1D8 7394 8746 E4E1
+W: www.selfnet.de
+D: Initial Creation, Config Creator
+
+N: Tobias Tröps
+E: tobias.troeps AT selfnet DOT de
+W: www.selfnet.de
+D: Configuration Examples, Debugging, Code Review

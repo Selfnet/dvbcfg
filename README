@@ -1,0 +1,7 @@
+This git helps us to create manage and distribute configuration files for our dvblast Multicast Setup.
+
+~/bin contains scripts to start or manage our dvblast instances
+~/cfg contains our current running configuration files
+~/creator conteins a script to create above configuration files
+
+
